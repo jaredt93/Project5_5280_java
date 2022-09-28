@@ -5,20 +5,39 @@
 - Tom Va
 - Jared Tamulynas
 
-## Implementatoin
+## Implementation
 APIs:
 	- Registration: /api/signup <br />
-		- If the registering email is found in the database, user is presented with an error toast message. <br />
+		- If the registering email (password excluded from match) is found in MongoDB Atlas, user is presented with a toast error message. <br />
 	- Auth: /api/auth <br />
 		- Both email and password must match. <br />
-	- Protected APIS: <br />
+	- Protected APIs: <br />
 		- User Profile Update: /api/user/update <br />
-Creating a new user uses the Registration API. If API returns a successful user then go to user profile screen. <br />
+Creating a new user uses the Registration API. If API successfully creates a USER document in the USERS collection then go to user profile screen. <br />
 Login uses the Auth API. API returns a user JSON if email and password match database entries. If no match a toast message is displayed. <br />
 A successful login through either Registration or Auth APIs will return a token back to the client. <br />
 If token expires or there is any exception during an update then user is presented with a toast message that something went wrong and user must logout. <br />
 Logout uses the User Profile Update API, with the token removed. This works because of JWT Token validation middleware for every update call. <br />
 After user logs out, user is not able to go "back" to previous screens. <br />
+
+## Postman
+Registration <br />
+https://project4-5280-server.herokuapp.com/api/signup <br />
+	- API validates for email, password, first name, last name, gender, and city. <br />
+	- On successful validation the values for these field are inserted into MongDB user document in users collection and response of these data along with uid is returned in JSON format. <br />
+	- On any failed field valdation that particular field is returned as 401. <br />
+	- If the given email exists in user document then a 401 is returned. <br />
+Login <br />
+https://project4-5280-server.herokuapp.com/api/auth <br />
+	- API will check if email and password are in user document. <br />
+	- If both match then a response of the user data along with token is returned in JSON format. <br />
+	- If no match then a 401 error is returned. <br />
+Protected API/User Profile Update <br />
+https://project4-5280-server.herokuapp.com/api/user/update <br />
+	- API uses middleware to validate token generated in /api/auth request. This means token must be sent in request header.
+	- If token is valid then data in request body (sent in JSON format) is used to update user document. A successful response message is returned.
+	- If token expired or there is no token then 401 is returned in response.
+
 
 
 ## Project Purpose
