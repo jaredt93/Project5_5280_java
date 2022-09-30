@@ -1,4 +1,4 @@
-package com.group3.project4;
+package com.group3.project4.login;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -7,7 +7,6 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +14,8 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.project4.R;
+import com.group3.project4.util.Globals;
+import com.group3.project4.util.RetrofitInterface;
 
 import java.util.HashMap;
 
@@ -97,7 +98,6 @@ public class LoginFragment extends Fragment {
     }
 
     private void btnSignin(final View view) {
-
         EditText inputAddress = view.findViewById(R.id.inputAddress);
         EditText inputPassword = view.findViewById(R.id.inputPassword);
 

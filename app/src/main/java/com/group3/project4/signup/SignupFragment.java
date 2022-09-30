@@ -1,4 +1,4 @@
-package com.group3.project4;
+package com.group3.project4.signup;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -15,8 +15,10 @@ import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.Toast;
 
-import com.example.project4.R;
 import com.example.project4.databinding.FragmentSignupBinding;
+import com.group3.project4.util.Globals;
+import com.group3.project4.util.RetrofitInterface;
+import com.group3.project4.profile.User;
 
 import java.util.HashMap;
 
