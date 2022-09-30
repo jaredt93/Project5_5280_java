@@ -1,5 +1,6 @@
 package com.group3.project4.shop;
 
+import android.content.Context;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,15 +10,21 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.request.RequestOptions;
 import com.example.project4.R;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 public class ShopRecyclerViewAdapter extends RecyclerView.Adapter<ShopRecyclerViewAdapter.ViewHolder> {
     ArrayList<Item> items;
     IShopRecycler mListener;
+    private Context context;
 
     public ShopRecyclerViewAdapter(ArrayList<Item> items, IShopRecycler mListener) {
         this.items = items;
@@ -40,6 +47,13 @@ public class ShopRecyclerViewAdapter extends RecyclerView.Adapter<ShopRecyclerVi
         holder.textViewItemName.setText(item.getName());
         holder.textViewItemPrice.setText("$" + item.getPrice().toString());
         holder.textViewItemDiscount.setText(item.getDiscount().toString() + "%");
+
+        String url = item.getPhoto();
+
+        Picasso.get()
+                .load(url)
+                .placeholder(R.drawable.ic_outline_downloading_24)
+                .into(holder.imageViewItemPhoto);
     }
 
     @Override

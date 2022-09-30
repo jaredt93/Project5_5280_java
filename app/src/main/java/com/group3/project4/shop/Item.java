@@ -1,5 +1,11 @@
 package com.group3.project4.shop;
 
+import android.util.Log;
+import android.widget.ImageView;
+
+import com.example.project4.R;
+import com.squareup.picasso.Picasso;
+
 public class Item {
     String name, photo;
     Double price;
@@ -46,5 +52,15 @@ public class Item {
 
     public void setDiscount(Integer discount) {
         this.discount = discount;
+    }
+
+    @Override
+    public String toString() {
+        return "Item{" +
+                "name='" + name + '\'' +
+                ", photo='" + photo + '\'' +
+                ", price=" + price +
+                ", discount=" + discount +
+                '}';
     }
 }

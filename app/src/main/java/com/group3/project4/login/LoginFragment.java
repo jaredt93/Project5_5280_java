@@ -98,7 +98,6 @@ public class LoginFragment extends Fragment {
     }
 
     private void btnSignin(final View view) {
-
         EditText inputAddress = view.findViewById(R.id.inputAddress);
         EditText inputPassword = view.findViewById(R.id.inputPassword);
 
