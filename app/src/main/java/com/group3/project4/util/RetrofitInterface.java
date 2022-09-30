@@ -1,4 +1,8 @@
-package com.group3.project4;
+package com.group3.project4.util;
+
+import com.group3.project4.profile.UpdateUserResult;
+import com.group3.project4.login.LoginResult;
+import com.group3.project4.signup.SignupResult;
 
 import java.util.HashMap;
 

@@ -1,4 +1,4 @@
-package com.group3.project4;
+package com.group3.project4.profile;
 
 import java.io.Serializable;
 import java.util.Objects;

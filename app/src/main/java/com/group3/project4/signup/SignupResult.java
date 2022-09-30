@@ -1,8 +1,8 @@
-package com.group3.project4;
+package com.group3.project4.signup;
 
 import com.google.gson.annotations.SerializedName;
 
-public class UpdateUserResult {
+public class SignupResult {
     @SerializedName("id")
     String id;
     String firstName;
@@ -11,7 +11,6 @@ public class UpdateUserResult {
     @SerializedName("email")
     String email;
     String password;
-    @SerializedName("age")
     int age;
     int weight;
     String address;

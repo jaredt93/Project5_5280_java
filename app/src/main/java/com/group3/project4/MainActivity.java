@@ -1,13 +1,26 @@
 package com.group3.project4;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.example.project4.R;
+import com.example.project4.databinding.ActivityMainBinding;
+import com.group3.project4.cart.CartFragment;
+import com.group3.project4.cart.CartItem;
+import com.group3.project4.login.LoginFragment;
+import com.group3.project4.login.LoginResult;
+import com.group3.project4.profile.User;
+import com.group3.project4.profile.UserProfileFragment;
+import com.group3.project4.shop.Item;
+import com.group3.project4.shop.ShopFragment;
+import com.group3.project4.signup.SignupFragment;
+import com.group3.project4.util.Globals;
+import com.group3.project4.util.RetrofitInterface;
 
 import java.util.HashMap;
 
@@ -18,17 +31,41 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements
-    LoginFragment.IListener, SignupFragment.IListener, UserProfileFragment.IListener {
+    LoginFragment.IListener, SignupFragment.IListener, UserProfileFragment.IListener, ShopFragment.IListener, CartFragment.IListener {
+    ActivityMainBinding binding;
     User user;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerview, new LoginFragment(), "LoginFragment")
-                .commit();
+//        getSupportFragmentManager().beginTransaction()
+//                .replace(R.id.containerview, new LoginFragment(), "LoginFragment")
+//                .commit();
+
+        binding.bottomNavigationView.setOnItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.shopFragment:
+                    replaceFragment(new ShopFragment());
+                    break;
+                case R.id.cartFragment:
+                    replaceFragment(new CartFragment());
+                    break;
+                case R.id.userProfileFragment:
+                    replaceFragment(new UserProfileFragment());
+                    break;
+            }
+
+            return true;
+        });
+    }
+
+    private void replaceFragment(Fragment fragment) {
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.replace(R.id.layoutView, fragment).commit();
     }
 
     @Override
@@ -107,6 +144,17 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void updateUserProfile() {
+
+    }
+
+    @Override
+    public void addItemToCart(Item item) {
+
+    }
+
+
+    @Override
+    public void deleteItemFromCart(CartItem cartItem) {
 
     }
 }

@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="10dp"
-    tools:context="com.group3.project4.SignupFragment">
+    tools:context="com.group3.project4.signup.SignupFragment">
 
     <EditText
         android:id="@+id/inputFirstName"

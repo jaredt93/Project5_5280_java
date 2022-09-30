@@ -1,4 +1,4 @@
-package com.group3.project4;
+package com.group3.project4.util;
 
 import retrofit2.Retrofit;
 
