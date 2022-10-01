@@ -1,15 +1,18 @@
 package com.group3.project4.shop;
 
-import android.util.Log;
 import android.widget.ImageView;
 
 import com.example.project4.R;
 import com.squareup.picasso.Picasso;
 
-public class Item {
+import java.io.Serializable;
+import java.util.Objects;
+
+public class Item implements Serializable {
     String name, photo;
     Double price;
     Integer discount;
+    Integer quantity = 1;
 
     public Item() {
         // empty
@@ -54,6 +57,27 @@ public class Item {
         this.discount = discount;
     }
 
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Item item = (Item) o;
+        return Objects.equals(name, item.name) && Objects.equals(photo, item.photo) && Objects.equals(price, item.price) && Objects.equals(discount, item.discount);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, photo, price, discount);
+    }
+
     @Override
     public String toString() {
         return "Item{" +
@@ -61,6 +85,7 @@ public class Item {
                 ", photo='" + photo + '\'' +
                 ", price=" + price +
                 ", discount=" + discount +
+                ", quantity=" + quantity +
                 '}';
     }
 }
