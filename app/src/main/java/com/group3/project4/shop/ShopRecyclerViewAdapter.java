@@ -53,6 +53,7 @@ public class ShopRecyclerViewAdapter extends RecyclerView.Adapter<ShopRecyclerVi
         Picasso.get()
                 .load(url)
                 .placeholder(R.drawable.ic_outline_downloading_24)
+                .resize(50, 50)
                 .into(holder.imageViewItemPhoto);
     }
 

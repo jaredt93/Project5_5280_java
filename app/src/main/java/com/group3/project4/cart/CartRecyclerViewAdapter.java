@@ -15,10 +15,10 @@ import com.group3.project4.shop.Item;
 import java.util.ArrayList;
 
 public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerViewAdapter.ViewHolder> {
-    ArrayList<CartItem> cartItems;
+    ArrayList<Item> cartItems;
     CartRecyclerViewAdapter.ICartRecycler mListener;
 
-    public CartRecyclerViewAdapter(ArrayList<CartItem> cartItems, CartRecyclerViewAdapter.ICartRecycler mListener) {
+    public CartRecyclerViewAdapter(ArrayList<Item> cartItems, CartRecyclerViewAdapter.ICartRecycler mListener) {
         this.cartItems = cartItems;
         this.mListener = mListener;
     }
@@ -33,11 +33,11 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
 
     @Override
     public void onBindViewHolder(@NonNull CartRecyclerViewAdapter.ViewHolder holder, int position) {
-        CartItem cartItem = cartItems.get(position);
+        Item cartItem = cartItems.get(position);
         holder.cartItem = cartItem;
 
-        holder.textViewItemName.setText(cartItem.getItem().getName());
-        holder.textViewItemPriceFinal.setText("$" + cartItem.getFinalPrice().toString());
+        holder.textViewItemName.setText(cartItem.getName());
+        holder.textViewItemPriceFinal.setText("$" + cartItem.getQuantity().toString());
         holder.textViewItemQuantity.setText(cartItem.getQuantity().toString());
     }
 
@@ -55,7 +55,7 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
 
         View rootView;
         int position;
-        CartItem cartItem;
+        Item cartItem;
         CartRecyclerViewAdapter.ICartRecycler mListener;
 
         public ViewHolder(@NonNull View itemView, CartRecyclerViewAdapter.ICartRecycler mListener) {
@@ -79,7 +79,7 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
     }
 
     interface ICartRecycler {
-        void deleteItemFromCart(CartItem cartItem);
+        void deleteItemFromCart(Item cartItem);
     }
 }
 

@@ -6,12 +6,13 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.project4.R;
 import com.example.project4.databinding.ActivityMainBinding;
 import com.group3.project4.cart.CartFragment;
-import com.group3.project4.cart.CartItem;
 import com.group3.project4.login.LoginFragment;
 import com.group3.project4.login.LoginResult;
 import com.group3.project4.profile.User;
@@ -22,6 +23,7 @@ import com.group3.project4.signup.SignupFragment;
 import com.group3.project4.util.Globals;
 import com.group3.project4.util.RetrofitInterface;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import retrofit2.Call;
@@ -34,6 +36,7 @@ public class MainActivity extends AppCompatActivity implements
     LoginFragment.IListener, SignupFragment.IListener, UserProfileFragment.IListener, ShopFragment.IListener, CartFragment.IListener {
     ActivityMainBinding binding;
     User user;
+    ArrayList<Item> cartItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,9 +44,20 @@ public class MainActivity extends AppCompatActivity implements
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-//        getSupportFragmentManager().beginTransaction()
-//                .replace(R.id.containerview, new LoginFragment(), "LoginFragment")
-//                .commit();
+//        if (user == null) {
+//            binding.bottomNavigationView.setVisibility(View.INVISIBLE);
+//
+//            getSupportFragmentManager().beginTransaction()
+//                    .replace(R.id.layoutView, new LoginFragment(), "LoginFragment")
+//                    .commit();
+//        } else {
+            Log.d("JWT", "onCreate: " + user);
+            binding.bottomNavigationView.setVisibility(View.VISIBLE);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.layoutView, new ShopFragment())
+                    .commit();
+//        }
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -51,10 +65,10 @@ public class MainActivity extends AppCompatActivity implements
                     replaceFragment(new ShopFragment());
                     break;
                 case R.id.cartFragment:
-                    replaceFragment(new CartFragment());
+                    replaceFragment(CartFragment.newInstance(cartItems));
                     break;
                 case R.id.userProfileFragment:
-                    replaceFragment(new UserProfileFragment());
+                    replaceFragment(UserProfileFragment.newInstance(user));
                     break;
             }
 
@@ -71,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void signup() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerview, new SignupFragment(), "SignupFragment")
+                .replace(R.id.layoutView, new SignupFragment(), "SignupFragment")
                 .addToBackStack(null)
                 .commit();
     }
@@ -111,9 +125,9 @@ public class MainActivity extends AppCompatActivity implements
                             result.getGender(), "", result.getToken(), result.getAge(), result.getWeight(),
                             result.getAddress());
 
+                    binding.bottomNavigationView.setVisibility(View.VISIBLE);
                     getSupportFragmentManager().beginTransaction()
-                            .replace(R.id.containerview, UserProfileFragment.newInstance(user), "UserProfileFragment")
-                            .addToBackStack(null)
+                            .replace(R.id.layoutView, new ShopFragment())
                             .commit();
                 } else {
                     Toast.makeText(getApplicationContext(), "you were not found   ", Toast.LENGTH_LONG).show();
@@ -149,12 +163,21 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void addItemToCart(Item item) {
+        int index = cartItems.indexOf(item);
 
+        if(index != -1) {
+            Item tempItem = cartItems.get(index);
+            tempItem.setQuantity(tempItem.getQuantity() + 1);
+            cartItems.set(index, tempItem);
+        } else {
+            cartItems.add(item);
+        }
+
+        Log.d("JWT", "addItemToCart: " + cartItems.toString());
     }
 
-
     @Override
-    public void deleteItemFromCart(CartItem cartItem) {
+    public void deleteItemFromCart(Item cartItem) {
 
     }
 }
