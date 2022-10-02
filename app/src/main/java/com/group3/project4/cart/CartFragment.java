@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 
 import com.example.project4.R;
 import com.example.project4.databinding.FragmentCartBinding;
+import com.group3.project4.login.LoginFragment;
 import com.group3.project4.profile.User;
 import com.group3.project4.profile.UserProfileFragment;
 import com.group3.project4.shop.Item;
@@ -24,19 +25,19 @@ import java.util.ArrayList;
 
 public class CartFragment extends Fragment implements CartRecyclerViewAdapter.ICartRecycler {
     FragmentCartBinding binding;
-    ArrayList<Item> cartItems = new ArrayList<>();
+    Order order = new Order();
     LinearLayoutManager layoutManager;
     CartRecyclerViewAdapter adapter;
-    private static final String ITEM = "ITEM";
+    private static final String ORDER = "ORDER";
 
     public CartFragment() {
         // Required empty public constructor
     }
 
-    public static CartFragment newInstance(ArrayList<Item> cartItems) {
+    public static CartFragment newInstance(Order order) {
         CartFragment fragment = new CartFragment();
         Bundle args = new Bundle();
-        args.putSerializable(ITEM, cartItems);
+        args.putSerializable(ORDER, order);
         fragment.setArguments(args);
         return fragment;
     }
@@ -45,7 +46,10 @@ public class CartFragment extends Fragment implements CartRecyclerViewAdapter.IC
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            this.cartItems = (ArrayList<Item>) getArguments().getSerializable(ITEM);
+            this.order = (Order) getArguments().getSerializable(ORDER);
+            if(this.order == null) {
+                this.order = new Order();
+            }
         }
     }
 
@@ -53,7 +57,11 @@ public class CartFragment extends Fragment implements CartRecyclerViewAdapter.IC
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentCartBinding.inflate(inflater, container, false);
-        getActivity().setTitle("Your Items");
+        getActivity().setTitle("Your Cart");
+
+        if(order != null) {
+            binding.textViewOrderTotal.setText("Total: $" + order.getOrderTotal());
+        }
 
         layoutManager = new LinearLayoutManager(getContext());
         binding.recyclerView.setLayoutManager(layoutManager);
@@ -61,7 +69,7 @@ public class CartFragment extends Fragment implements CartRecyclerViewAdapter.IC
         DividerItemDecoration mDividerItemDecoration = new DividerItemDecoration(binding.recyclerView.getContext(), layoutManager.getOrientation());
         binding.recyclerView.addItemDecoration(mDividerItemDecoration);
 
-        adapter = new CartRecyclerViewAdapter(cartItems, this);
+        adapter = new CartRecyclerViewAdapter(order.cartItems, this);
         binding.recyclerView.setAdapter(adapter);
 
         return binding.getRoot();
@@ -70,7 +78,23 @@ public class CartFragment extends Fragment implements CartRecyclerViewAdapter.IC
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        Log.d("JWT", "addItemToCart: " + cartItems.toString());
+        Log.d("JWT", "addItemToCart: " + order.getCartItems().toString());
+
+        binding.imageButtonCheckout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.checkout();
+            }
+        });
+
+        binding.buttonEmptyCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                order = new Order();
+                mListener.emptyCart();
+
+            }
+        });
     }
 
     private void getItems() {
@@ -91,5 +115,7 @@ public class CartFragment extends Fragment implements CartRecyclerViewAdapter.IC
 
     public interface IListener {
         void deleteItemFromCart(Item cartItem);
+        void emptyCart();
+        void checkout();
     }
 }

@@ -16,6 +16,7 @@ import android.widget.Toast;
 import com.example.project4.R;
 import com.group3.project4.util.Globals;
 import com.group3.project4.util.RetrofitInterface;
+import com.group3.project4.util.UserResult;
 
 import java.util.HashMap;
 
@@ -110,12 +111,12 @@ public class LoginFragment extends Fragment {
                 data.put("email", inputAddress.getText().toString());
                 data.put("password", inputPassword.getText().toString());
 
-                Call<LoginResult> call = retrofitInterface.login(data);
-                call.enqueue(new Callback<LoginResult>() {
+                Call<UserResult> call = retrofitInterface.login(data);
+                call.enqueue(new Callback<UserResult>() {
                     @Override
-                    public void onResponse(Call<LoginResult> call, Response<LoginResult> response) {
+                    public void onResponse(Call<UserResult> call, Response<UserResult> response) {
                         if (response.code() == 200) {
-                            LoginResult result = response.body();
+                            UserResult result = response.body();
                             Toast.makeText(getActivity(), "found you " + result.getFirstName(), Toast.LENGTH_LONG).show();
                             mListener.loginSuccess(result.getEmail(), inputPassword.getText().toString());
                         } else {
@@ -124,7 +125,7 @@ public class LoginFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(Call<LoginResult> call, Throwable t) {
+                    public void onFailure(Call<UserResult> call, Throwable t) {
                         Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });

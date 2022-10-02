@@ -1,23 +1,23 @@
-package com.group3.project4.profile;
+package com.group3.project4.util;
 
-import com.google.gson.annotations.SerializedName;
 import com.group3.project4.cart.Order;
 
-public class UpdateUserResult {
-    @SerializedName("id")
+import java.util.ArrayList;
+
+public class UserResult {
     String id;
     String firstName;
     String lastName;
     String city;
-    @SerializedName("email")
     String email;
     String password;
-    @SerializedName("age")
+    String gender;
+    String token;
     int age;
     int weight;
     String address;
-    String gender;
     Order order;
+    ArrayList<Order> orderHistory;
 
     public String getId() {
         return id;
@@ -67,6 +67,22 @@ public class UpdateUserResult {
         this.password = password;
     }
 
+    public String getGender() {
+        return gender;
+    }
+
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
+    }
+
     public int getAge() {
         return age;
     }
@@ -91,14 +107,6 @@ public class UpdateUserResult {
         this.address = address;
     }
 
-    public String getGender() {
-        return gender;
-    }
-
-    public void setGender(String gender) {
-        this.gender = gender;
-    }
-
     public Order getOrder() {
         return order;
     }
@@ -106,4 +114,13 @@ public class UpdateUserResult {
     public void setOrder(Order order) {
         this.order = order;
     }
+
+    public ArrayList<Order> getOrderHistory() {
+        return orderHistory;
+    }
+
+    public void setOrderHistory(ArrayList<Order> orderHistory) {
+        this.orderHistory = orderHistory;
+    }
 }
+

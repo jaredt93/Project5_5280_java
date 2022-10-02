@@ -6,6 +6,17 @@
     android:layout_height="wrap_content"
     android:padding="16dp">
 
+    <TextView
+        android:id="@+id/textViewItemDiscountedPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="$10.00"
+        android:textColor="#4CAF50"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewAddItem"
+        app:layout_constraintTop_toBottomOf="@+id/textViewItemPrice" />
+
     <ImageView
         android:id="@+id/imageViewItemPhoto"
         android:layout_width="50dp"
@@ -34,15 +45,17 @@
         android:layout_marginEnd="16dp"
         android:text="$10.00"
         android:textColor="@color/black"
-        app:layout_constraintBottom_toBottomOf="@+id/imageViewItemPhoto"
-        app:layout_constraintEnd_toStartOf="@+id/imageViewAddItem" />
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@+id/imageViewAddItem"
+        app:layout_constraintTop_toBottomOf="@+id/textViewItemDiscount" />
 
     <TextView
         android:id="@+id/textViewItemDiscount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="10%"
-        android:textColor="@color/black"
+        android:textColor="#F44336"
+        android:textSize="12sp"
         app:layout_constraintEnd_toEndOf="@+id/textViewItemPrice"
         app:layout_constraintTop_toTopOf="@+id/imageViewItemPhoto" />
 
@@ -53,6 +66,6 @@
         app:layout_constraintBottom_toBottomOf="@+id/imageViewItemPhoto"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/imageViewItemPhoto"
-        app:srcCompat="@drawable/ic_baseline_add_circle_outline_24" />
+        app:srcCompat="@drawable/ic_baseline_add_shopping_cart_24" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

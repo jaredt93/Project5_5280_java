@@ -65,6 +65,17 @@ public class Item implements Serializable {
         this.quantity = quantity;
     }
 
+    public Double getDiscountedPrice() {
+        double discountedPrice = price - (price * ((double)discount / 100));
+        return Math.round(discountedPrice * 100.0) / 100.0;
+    }
+
+    public Double getTotalCost() {
+        double totalCost = getDiscountedPrice() * quantity;
+        return Math.round(totalCost * 100.0) / 100.0;
+    }
+
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
