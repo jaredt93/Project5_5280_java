@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.example.project4.databinding.FragmentUserProfileBinding;
 import com.group3.project4.util.Globals;
 import com.group3.project4.util.RetrofitInterface;
+import com.group3.project4.util.UserResult;
 
 import java.util.HashMap;
 
@@ -130,12 +131,12 @@ public class UserProfileFragment extends Fragment {
         binding.imageButtonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Call<UpdateUserResult> call = retrofitInterface.updateUser("LOGGING-OUT", new HashMap());
-                call.enqueue(new Callback<UpdateUserResult>() {
+                Call<UserResult> call = retrofitInterface.updateUser("LOGGING-OUT", new HashMap());
+                call.enqueue(new Callback<UserResult>() {
                     @Override
-                    public void onResponse(Call<UpdateUserResult> call, Response<UpdateUserResult> response) {
+                    public void onResponse(Call<UserResult> call, Response<UserResult> response) {
                         if (response.code() == 200) {
-                            UpdateUserResult result = response.body();
+                            UserResult result = response.body();
                             Toast.makeText(getActivity(), "Gone with the wind", Toast.LENGTH_LONG).show();
                             mListener.signOut();
                         } else {
@@ -144,7 +145,7 @@ public class UserProfileFragment extends Fragment {
                     }
 
                     @Override
-                    public void onFailure(Call<UpdateUserResult> call, Throwable t) {
+                    public void onFailure(Call<UserResult> call, Throwable t) {
                         Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });

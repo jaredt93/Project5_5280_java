@@ -17,6 +17,7 @@ public class User implements Serializable {
 
     Order order = new Order();
     ArrayList<Order> orderHistory = new ArrayList<>();
+    String customerId;
 
     public User() {
         // empty constructor
@@ -124,6 +125,22 @@ public class User implements Serializable {
 
     public void setOrder(Order order) {
         this.order = order;
+    }
+
+    public ArrayList<Order> getOrderHistory() {
+        return orderHistory;
+    }
+
+    public void setOrderHistory(ArrayList<Order> orderHistory) {
+        this.orderHistory = orderHistory;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 
     @Override

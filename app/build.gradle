@@ -1,3 +1,15 @@
+buildscript {
+    repositories {
+        maven {
+            url "https://cardinalcommerceprod.jfrog.io/artifactory/android"
+            credentials {
+                username 'braintree_team_sdk'
+                password 'AKCp8jQcoDy2hxSWhDAUQKXLDPDx6NYRkqrgFLRc3qDrayg6rrCbJpsKKyMwaykVL8FWusJpp'
+            }
+        }
+    }
+}
+
 plugins {
     id 'com.android.application'
 }
@@ -32,7 +44,6 @@ android {
 }
 
 dependencies {
-
     implementation 'androidx.appcompat:appcompat:1.5.1'
     implementation 'com.google.android.material:material:1.6.1'
     implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
@@ -43,6 +54,11 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.3.0'
     implementation 'com.squareup.retrofit2:converter-gson:2.3.0'
     implementation 'com.squareup.picasso:picasso:2.8'
-    implementation 'com.github.bumptech.glide:glide:4.14.1'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.14.1'
+    // to offer card payments
+    implementation 'com.braintreepayments.api:card:4.15.0'
+    // to collect device data
+    implementation 'com.braintreepayments.api:data-collector:4.15.0'
+
+    //implementation 'com.braintreepayments.api:drop-in:6.2.0'
 }
+

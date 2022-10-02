@@ -69,7 +69,6 @@ public class ShopFragment extends Fragment implements ShopRecyclerViewAdapter.IS
                              Bundle savedInstanceState) {
         binding = FragmentShopBinding.inflate(inflater, container, false);
         getActivity().setTitle("Browse Items");
-        getItems();
         layoutManager = new LinearLayoutManager(getContext());
         binding.recyclerView.setLayoutManager(layoutManager);
 

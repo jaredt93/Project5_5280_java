@@ -30,4 +30,7 @@ public interface RetrofitInterface {
 
     @GET("/api/getItems")
     Call<ItemResponse> getItems();
+
+    @GET("/client_token")
+    Call<ClientToken> getClientToken();
 }
