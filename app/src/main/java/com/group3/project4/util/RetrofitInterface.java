@@ -33,4 +33,7 @@ public interface RetrofitInterface {
 
     @GET("/client_token")
     Call<ClientToken> getClientToken();
+
+    @POST("/api/user/find")
+    Call<UserResult> getUserByToken(@Header ("x-jwt-token") String token, @Body HashMap<String, String> data);
 }
