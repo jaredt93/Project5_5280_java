@@ -1,5 +1,6 @@
 package com.group3.project4;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -12,6 +13,12 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
+import com.braintreepayments.api.BraintreeClient;
+//import com.braintreepayments.api.DropInClient;
+//import com.braintreepayments.api.DropInListener;
+//import com.braintreepayments.api.DropInRequest;
+//import com.braintreepayments.api.DropInResult;
+import com.braintreepayments.api.UserCanceledException;
 import com.example.project4.R;
 import com.example.project4.databinding.ActivityMainBinding;
 import com.group3.project4.cart.CartFragment;
@@ -25,6 +32,7 @@ import com.group3.project4.profile.UserProfileFragment;
 import com.group3.project4.shop.Item;
 import com.group3.project4.shop.ShopFragment;
 import com.group3.project4.signup.SignupFragment;
+import com.group3.project4.util.BraintreeClientTokenProvider;
 import com.group3.project4.util.Globals;
 import com.group3.project4.util.RetrofitInterface;
 import com.group3.project4.util.UserResult;
@@ -39,11 +47,15 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements
-    LoginFragment.IListener, SignupFragment.IListener, UserProfileFragment.IListener, ShopFragment.IListener, CartFragment.IListener {
+    LoginFragment.IListener, SignupFragment.IListener, UserProfileFragment.IListener, ShopFragment.IListener, CartFragment.IListener, OrderHistoryFragment.IListener {
     ActivityMainBinding binding;
     RetrofitInterface retrofitInterface;
     Retrofit retrofit;
     User user;
+
+    // Braintree
+    private BraintreeClient braintreeClient;
+    //private DropInClient dropInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +100,8 @@ public class MainActivity extends AppCompatActivity implements
 
             return true;
         });
+
+        braintreeClient = new BraintreeClient(this, new BraintreeClientTokenProvider());
     }
 
     private void replaceFragment(Fragment fragment) {
@@ -188,7 +202,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void showOrderHistory() {
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.layoutView, new OrderHistoryFragment())
+                .replace(R.id.layoutView, OrderHistoryFragment.newInstance(user))
                 .addToBackStack(null)
                 .commit();
     }
@@ -248,6 +262,9 @@ public class MainActivity extends AppCompatActivity implements
         data.put("age", user.getAge());
         data.put("weight", user.getWeight());
         data.put("address", user.getAddress());
+        data.put("customerId", user);
+        data.put("order", user.getOrder());
+        data.put("orderHistory", user.getOrderHistory());
 
         return data;
     }
@@ -319,6 +336,62 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void checkout() {
+        HashMap<String, Object> data = new HashMap<>();
+        data = putUserData();
 
+        if(user.getOrderHistory() != null) {
+            user.getOrderHistory().add(user.getOrder());
+        } else {
+            ArrayList<Order> orderHistory = new ArrayList<>();
+            orderHistory.add(user.getOrder());
+            user.setOrderHistory(orderHistory);
+        }
+
+        data.put("orderHistory", user.getOrderHistory());
+        data.put("order", null);
+        user.setOrder(new Order());
+
+        Call<UserResult> call = retrofitInterface.updateUser(user.getToken(), data);
+        call.enqueue(new Callback<UserResult>() {
+            @Override
+            public void onResponse(Call<UserResult> call, Response<UserResult> response) {
+                if (response.code() == 200) {
+                    UserResult result = response.body();
+                    Toast.makeText(getApplicationContext(), "Cart emptied.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResult> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        replaceFragment(CartFragment.newInstance(user.getOrder()));
     }
+
+//    public void onBraintreeSubmit() {
+//        DropInRequest dropInRequest = new DropInRequest();
+//        dropInClient = new DropInClient(this, dropInRequest, new BraintreeClientTokenProvider());
+//    }
+
+//    private void launchDropIn() {
+//        dropInClient.launchDropIn();
+//    }
+//
+//    @Override
+//    public void onDropInSuccess(@NonNull DropInResult dropInResult) {
+//        // send dropInResult.getPaymentMethodNonce().getString() to server
+//    }
+//
+//    @Override
+//    public void onDropInFailure(@NonNull Exception error) {
+//        if (error instanceof UserCanceledException) {
+//            // user canceled
+//        } else {
+//            // handle error
+//        }
+//    }
 }
