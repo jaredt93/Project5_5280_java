@@ -80,7 +80,7 @@
         android:id="@+id/inputUserProfileLastName"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="32dp"
         android:ems="10"
         android:hint="Last Name"
         android:inputType="textPersonName"
@@ -88,7 +88,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imageUserProfile" />
+        app:layout_constraintTop_toBottomOf="@+id/buttonOrderHistory" />
 
 
     <RadioGroup
@@ -116,34 +116,36 @@
             tools:layout_editor_absoluteY="303dp" />
     </RadioGroup>
 
-    <ImageView
-        android:id="@+id/imageUserProfile"
-        android:layout_width="168dp"
-        android:layout_height="144dp"
-        android:src="@drawable/ic_baseline_person_24"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/ic_baseline_person_24" />
-
     <ImageButton
         android:id="@+id/imageButtonSave"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="8dp"
+        android:minHeight="48dp"
         android:src="@drawable/ic_baseline_save_24"
-        app:layout_constraintEnd_toStartOf="@+id/imageUserProfile"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/imageUserProfile" />
+        app:layout_constraintTop_toTopOf="@+id/buttonOrderHistory" />
 
     <ImageButton
         android:id="@+id/imageButtonLogout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
+        android:layout_marginEnd="8dp"
+        android:minHeight="48dp"
         android:src="@drawable/ic_baseline_exit_to_app_24"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/imageUserProfile"
-        app:layout_constraintTop_toTopOf="@+id/imageUserProfile" />
+        app:layout_constraintTop_toTopOf="@+id/buttonOrderHistory" />
+
+    <Button
+        android:id="@+id/buttonOrderHistory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="?attr/colorButtonNormal"
+        android:text="ORDER HISTORY"
+        android:textColor="@color/black"
+        app:layout_constraintEnd_toStartOf="@+id/imageButtonLogout"
+        app:layout_constraintStart_toEndOf="@+id/imageButtonSave"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

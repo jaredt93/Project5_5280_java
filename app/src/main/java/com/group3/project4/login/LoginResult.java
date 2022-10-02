@@ -1,9 +1,6 @@
 package com.group3.project4.login;
 
-import com.google.gson.annotations.SerializedName;
-
 public class LoginResult {
-
     String id;
     String firstName;
     String lastName;

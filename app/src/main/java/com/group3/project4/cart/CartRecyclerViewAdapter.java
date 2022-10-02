@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.project4.R;
 import com.group3.project4.shop.Item;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -37,8 +38,16 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
         holder.cartItem = cartItem;
 
         holder.textViewItemName.setText(cartItem.getName());
-        holder.textViewItemPriceFinal.setText("$" + cartItem.getQuantity().toString());
-        holder.textViewItemQuantity.setText(cartItem.getQuantity().toString());
+        holder.textViewItemPrice.setText("Each: " + "$" + cartItem.getDiscountedPrice());
+        holder.textViewItemPriceFinal.setText("Total: " + "$" + cartItem.getTotalCost());
+        holder.textViewItemQuantity.setText("Quantity: " + cartItem.getQuantity());
+
+        String url = cartItem.getPhoto();
+
+        Picasso.get()
+                .load(url)
+                .placeholder(R.drawable.ic_outline_downloading_24)
+                .into(holder.imageViewItemPhoto);
     }
 
     @Override
@@ -51,6 +60,7 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
         ImageView imageViewDeleteItem;
         TextView textViewItemName;
         TextView textViewItemQuantity;
+        TextView textViewItemPrice;
         TextView textViewItemPriceFinal;
 
         View rootView;
@@ -66,6 +76,7 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
             imageViewItemPhoto = itemView.findViewById(R.id.imageViewItemPhoto);
             imageViewDeleteItem = itemView.findViewById(R.id.imageViewDeleteItem);
             textViewItemName = itemView.findViewById(R.id.textViewItemName);
+            textViewItemPrice = itemView.findViewById(R.id.textViewItemPrice);
             textViewItemPriceFinal = itemView.findViewById(R.id.textViewItemPriceFinal);
             textViewItemQuantity = itemView.findViewById(R.id.textViewItemQuantity);
 

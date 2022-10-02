@@ -1,54 +1,41 @@
 package com.group3.project4.profile;
 
+import com.group3.project4.cart.Order;
+import com.group3.project4.shop.Item;
+
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Objects;
 
 public class User implements Serializable {
     public static String FEMALE = "FEMALE";
     public static String MALE = "MALE";
 
-    String email, username, first_name, last_name, city, gender, image_location, id, address;
-    Boolean is_deleted;
+    String email, first_name, last_name, city, gender, id, address;
     String token;
     int age, weight;
+
+    Order order = new Order();
+    ArrayList<Order> orderHistory = new ArrayList<>();
 
     public User() {
         // empty constructor
     }
 
-    public User(String id, String email, String first_name, String last_name, String city, String gender, String image_location,
-            String token, int age, int weight, String address) {
+    public User(String id, String email, String first_name, String last_name, String city, String gender,
+            String token, int age, int weight, String address, Order order, ArrayList<Order> orderHistory) {
         this.id = id;
         this.email = email;
         this.first_name = first_name;
         this.last_name = last_name;
         this.city = city;
         this.gender = gender;
-
-        username = String.valueOf(first_name.toLowerCase().charAt(0)) + last_name.toLowerCase();
-        this.image_location = image_location;
-        is_deleted = false;
-
         this.token = token;
         this.age = age;
         this.weight = weight;
         this.address = address;
-    }
-
-    public User(String email, String username, String first_name, String last_name, String city,
-                String gender, String image_location, Boolean is_deleted, String token, int age, int weight, String address) {
-        this.email = email;
-        this.username = username;
-        this.first_name = first_name;
-        this.last_name = last_name;
-        this.city = city;
-        this.gender = gender;
-        this.image_location = image_location;
-        this.is_deleted = is_deleted;
-        this.token = token;
-        this.age = age;
-        this.weight = weight;
-        this.address = address;
+        this.order = order;
+        this.orderHistory = orderHistory;
     }
 
     public String getId() {
@@ -65,14 +52,6 @@ public class User implements Serializable {
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
     }
 
     public String getFirst_name() {
@@ -107,22 +86,6 @@ public class User implements Serializable {
         this.gender = gender;
     }
 
-    public String getImage_location() {
-        return image_location;
-    }
-
-    public void setImage_location(String image_location) {
-        this.image_location = image_location;
-    }
-
-    public Boolean getIs_deleted() {
-        return is_deleted;
-    }
-
-    public void setIs_deleted(Boolean is_deleted) {
-        this.is_deleted = is_deleted;
-    }
-
     public String getToken() {
         return token;
     }
@@ -155,16 +118,24 @@ public class User implements Serializable {
         this.weight = weight;
     }
 
+    public Order getOrder() {
+        return order;
+    }
+
+    public void setOrder(Order order) {
+        this.order = order;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return email.equals(user.email) && username.equals(user.username) && first_name.equals(user.first_name) && last_name.equals(user.last_name) && city.equals(user.city) && gender.equals(user.gender) && Objects.equals(image_location, user.image_location) && id.equals(user.id) && Objects.equals(is_deleted, user.is_deleted) && token.equals(user.token);
+        return email.equals(user.email) && first_name.equals(user.first_name) && last_name.equals(user.last_name) && city.equals(user.city) && gender.equals(user.gender) && id.equals(user.id) && token.equals(user.token);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(email, username, first_name, last_name, city, gender, image_location, id, is_deleted, token);
+        return Objects.hash(email, first_name, last_name, city, gender, id, token);
     }
 }

@@ -144,7 +144,6 @@ public class SignupFragment extends Fragment {
                     error[0] = "Password required";
                     showAlert(error[0]);
                 } else {
-//                    FirebaseAuth mAuthLocal = FirebaseAuth.getInstance();
                     HashMap<String, String> data = new HashMap<>();
                     data.put("email", email);
                     data.put("password", password);

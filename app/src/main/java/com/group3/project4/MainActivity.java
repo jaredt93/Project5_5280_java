@@ -5,6 +5,8 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,8 +15,11 @@ import android.widget.Toast;
 import com.example.project4.R;
 import com.example.project4.databinding.ActivityMainBinding;
 import com.group3.project4.cart.CartFragment;
+import com.group3.project4.cart.Order;
+import com.group3.project4.history.OrderHistoryFragment;
 import com.group3.project4.login.LoginFragment;
 import com.group3.project4.login.LoginResult;
+import com.group3.project4.profile.UpdateUserResult;
 import com.group3.project4.profile.User;
 import com.group3.project4.profile.UserProfileFragment;
 import com.group3.project4.shop.Item;
@@ -22,6 +27,7 @@ import com.group3.project4.shop.ShopFragment;
 import com.group3.project4.signup.SignupFragment;
 import com.group3.project4.util.Globals;
 import com.group3.project4.util.RetrofitInterface;
+import com.group3.project4.util.UserResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -35,8 +41,9 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class MainActivity extends AppCompatActivity implements
     LoginFragment.IListener, SignupFragment.IListener, UserProfileFragment.IListener, ShopFragment.IListener, CartFragment.IListener {
     ActivityMainBinding binding;
+    RetrofitInterface retrofitInterface;
+    Retrofit retrofit;
     User user;
-    ArrayList<Item> cartItems = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,20 +51,27 @@ public class MainActivity extends AppCompatActivity implements
         binding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
-//        if (user == null) {
-//            binding.bottomNavigationView.setVisibility(View.INVISIBLE);
-//
-//            getSupportFragmentManager().beginTransaction()
-//                    .replace(R.id.layoutView, new LoginFragment(), "LoginFragment")
-//                    .commit();
-//        } else {
+        retrofit = new Retrofit.Builder()
+                .baseUrl(Globals.URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        retrofitInterface = retrofit.create(RetrofitInterface.class);
+
+        if (user == null) {
+            binding.bottomNavigationView.setVisibility(View.INVISIBLE);
+
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.layoutView, new LoginFragment(), "LoginFragment")
+                    .commit();
+        } else {
             Log.d("JWT", "onCreate: " + user);
             binding.bottomNavigationView.setVisibility(View.VISIBLE);
 
             getSupportFragmentManager().beginTransaction()
                     .replace(R.id.layoutView, new ShopFragment())
                     .commit();
-//        }
+        }
 
         binding.bottomNavigationView.setOnItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -65,7 +79,7 @@ public class MainActivity extends AppCompatActivity implements
                     replaceFragment(new ShopFragment());
                     break;
                 case R.id.cartFragment:
-                    replaceFragment(CartFragment.newInstance(cartItems));
+                    replaceFragment(CartFragment.newInstance(user.getOrder()));
                     break;
                 case R.id.userProfileFragment:
                     replaceFragment(UserProfileFragment.newInstance(user));
@@ -102,28 +116,20 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     private void setUser(String email, String password) {
-        RetrofitInterface retrofitInterface;
-        Retrofit retrofit;
-        retrofit = new Retrofit.Builder()
-                .baseUrl(Globals.URL)
-                .addConverterFactory(GsonConverterFactory.create())
-                .build();
-
-        retrofitInterface = retrofit.create(RetrofitInterface.class);
         HashMap<String, String> data = new HashMap<>();
         data.put("email", email);
         data.put("password", password);
 
-        Call<LoginResult> call = retrofitInterface.login(data);
-        call.enqueue(new Callback<LoginResult>() {
+        Call<UserResult> call = retrofitInterface.login(data);
+        call.enqueue(new Callback<UserResult>() {
             @Override
-            public void onResponse(Call<LoginResult> call, Response<LoginResult> response) {
+            public void onResponse(Call<UserResult> call, Response<UserResult> response) {
                 if (response.code() == 200) {
-                    LoginResult result = response.body();
+                    UserResult result = response.body();
                     user = new User(result.getId(), result.getEmail(), result.getFirstName(),
                             result.getLastName(), result.getCity(),
-                            result.getGender(), "", result.getToken(), result.getAge(), result.getWeight(),
-                            result.getAddress());
+                            result.getGender(), result.getToken(), result.getAge(), result.getWeight(),
+                            result.getAddress(), result.getOrder(), result.getOrderHistory());
 
                     binding.bottomNavigationView.setVisibility(View.VISIBLE);
                     getSupportFragmentManager().beginTransaction()
@@ -135,7 +141,7 @@ public class MainActivity extends AppCompatActivity implements
             }
 
             @Override
-            public void onFailure(Call<LoginResult> call, Throwable t) {
+            public void onFailure(Call<UserResult> call, Throwable t) {
                 Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
@@ -151,33 +157,168 @@ public class MainActivity extends AppCompatActivity implements
         finishAffinity();
 
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.containerview, new LoginFragment(), "LoginFragment")
+                .replace(R.id.layoutView, new LoginFragment(), "LoginFragment")
                 .addToBackStack(null)
                 .commit();
     }
 
     @Override
-    public void updateUserProfile() {
+    public void updateUserProfile(HashMap<String, Object> data, User user) {
+        this.user = user;
+        Call<UserResult> call = retrofitInterface.updateUser(user.getToken(), data);
+        call.enqueue(new Callback<UserResult>() {
+            @Override
+            public void onResponse(Call<UserResult> call, Response<UserResult> response) {
+                if (response.code() == 200) {
+                    UserResult result = response.body();
+                    Toast.makeText(getApplicationContext(), "Profile updated", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Something went wrong. Logout and log back in.", Toast.LENGTH_LONG).show();
+                }
+            }
 
+            @Override
+            public void onFailure(Call<UserResult> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    @Override
+    public void showOrderHistory() {
+        getSupportFragmentManager().beginTransaction()
+                .replace(R.id.layoutView, new OrderHistoryFragment())
+                .addToBackStack(null)
+                .commit();
     }
 
     @Override
     public void addItemToCart(Item item) {
-        int index = cartItems.indexOf(item);
+        HashMap<String, Object> data = new HashMap<>();
+        data = putUserData();
 
-        if(index != -1) {
-            Item tempItem = cartItems.get(index);
-            tempItem.setQuantity(tempItem.getQuantity() + 1);
-            cartItems.set(index, tempItem);
+        if(user.getOrder() != null) {
+            int index = user.getOrder().getCartItems().indexOf(item);
+
+            if (index != -1) {
+                Item tempItem = user.getOrder().getCartItems().get(index);
+                tempItem.setQuantity(tempItem.getQuantity() + 1);
+                user.getOrder().getCartItems().set(index, tempItem);
+            } else {
+                user.getOrder().getCartItems().add(item);
+            }
+
+            user.getOrder().setOrderTotal();
         } else {
+            ArrayList<Item> cartItems = new ArrayList<>();
             cartItems.add(item);
+            user.setOrder(new Order(new ArrayList<Item>(cartItems)));
         }
 
-        Log.d("JWT", "addItemToCart: " + cartItems.toString());
+        data.put("order", user.getOrder());
+
+        Call<UserResult> call = retrofitInterface.updateUser(user.getToken(), data);
+        call.enqueue(new Callback<UserResult>() {
+            @Override
+            public void onResponse(Call<UserResult> call, Response<UserResult> response) {
+                if (response.code() == 200) {
+                    UserResult result = response.body();
+                    Toast.makeText(getApplicationContext(), "Item added to cart.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResult> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+    }
+
+    private HashMap<String, Object> putUserData() {
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("email", user.getEmail());
+        data.put("firstName", user.getFirst_name());
+        data.put("lastName", user.getLast_name());
+        data.put("city", user.getCity());
+        data.put("gender", user.getGender());
+        data.put("age", user.getAge());
+        data.put("weight", user.getWeight());
+        data.put("address", user.getAddress());
+
+        return data;
     }
 
     @Override
     public void deleteItemFromCart(Item cartItem) {
+        HashMap<String, Object> data = new HashMap<>();
+        data = putUserData();
+
+        int index = user.getOrder().getCartItems().indexOf(cartItem);
+
+        if (index != -1) {
+            user.getOrder().getCartItems().remove(index);
+        }
+
+        user.getOrder().setOrderTotal();
+
+        data.put("order", user.getOrder());
+
+        Call<UserResult> call = retrofitInterface.updateUser(user.getToken(), data);
+        call.enqueue(new Callback<UserResult>() {
+            @Override
+            public void onResponse(Call<UserResult> call, Response<UserResult> response) {
+                if (response.code() == 200) {
+                    UserResult result = response.body();
+                    Toast.makeText(getApplicationContext(), "Item removed from cart.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResult> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        replaceFragment(CartFragment.newInstance(user.getOrder()));
+    }
+
+    @Override
+    public void emptyCart() {
+        user.setOrder(new Order());
+        HashMap<String, Object> data = new HashMap<>();
+        data = putUserData();
+
+        data.put("order", null);
+
+        Call<UserResult> call = retrofitInterface.updateUser(user.getToken(), data);
+        call.enqueue(new Callback<UserResult>() {
+            @Override
+            public void onResponse(Call<UserResult> call, Response<UserResult> response) {
+                if (response.code() == 200) {
+                    UserResult result = response.body();
+                    Toast.makeText(getApplicationContext(), "Cart emptied.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResult> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+        replaceFragment(CartFragment.newInstance(user.getOrder()));
+    }
+
+    @Override
+    public void checkout() {
 
     }
 }

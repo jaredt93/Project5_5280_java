@@ -20,13 +20,13 @@ import retrofit2.http.Path;
 
 public interface RetrofitInterface {
     @POST("/api/auth")
-    Call<LoginResult> login(@Body HashMap<String, String> data);
+    Call<UserResult> login(@Body HashMap<String, String> data);
 
     @POST("/api/signup")
     Call<SignupResult> signup(@Body HashMap<String, String> data);
 
     @POST("/api/user/update")
-    Call<UpdateUserResult> updateUser(@Header ("x-jwt-token") String token, @Body HashMap<String, Object> data);
+    Call<UserResult> updateUser(@Header ("x-jwt-token") String token, @Body HashMap<String, Object> data);
 
     @GET("/api/getItems")
     Call<ItemResponse> getItems();

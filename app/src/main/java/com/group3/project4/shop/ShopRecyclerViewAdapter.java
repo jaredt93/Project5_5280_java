@@ -45,15 +45,15 @@ public class ShopRecyclerViewAdapter extends RecyclerView.Adapter<ShopRecyclerVi
         holder.item = item;
 
         holder.textViewItemName.setText(item.getName());
-        holder.textViewItemPrice.setText("$" + item.getPrice().toString());
-        holder.textViewItemDiscount.setText(item.getDiscount().toString() + "%");
+        holder.textViewItemPrice.setText("$" + item.getPrice());
+        holder.textViewItemDiscountedPrice.setText("$" + item.getDiscountedPrice());
+        holder.textViewItemDiscount.setText(item.getDiscount() + "%");
 
         String url = item.getPhoto();
 
         Picasso.get()
                 .load(url)
                 .placeholder(R.drawable.ic_outline_downloading_24)
-                .resize(50, 50)
                 .into(holder.imageViewItemPhoto);
     }
 
@@ -68,6 +68,7 @@ public class ShopRecyclerViewAdapter extends RecyclerView.Adapter<ShopRecyclerVi
         TextView textViewItemName;
         TextView textViewItemPrice;
         TextView textViewItemDiscount;
+        TextView textViewItemDiscountedPrice;
 
         View rootView;
         int position;
@@ -83,6 +84,7 @@ public class ShopRecyclerViewAdapter extends RecyclerView.Adapter<ShopRecyclerVi
             imageViewAddItem = itemView.findViewById(R.id.imageViewAddItem);
             textViewItemName = itemView.findViewById(R.id.textViewItemName);
             textViewItemPrice = itemView.findViewById(R.id.textViewItemPrice);
+            textViewItemDiscountedPrice = itemView.findViewById(R.id.textViewItemDiscountedPrice);
             textViewItemDiscount = itemView.findViewById(R.id.textViewItemDiscount);
 
             imageViewAddItem.setOnClickListener(new View.OnClickListener() {

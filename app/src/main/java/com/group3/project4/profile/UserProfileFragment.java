@@ -32,17 +32,15 @@ public class UserProfileFragment extends Fragment {
     FragmentUserProfileBinding binding;
     RetrofitInterface retrofitInterface;
     Retrofit retrofit;
-
     private static final String USER = "USER";
-   /* FirebaseStorage storage = FirebaseStorage.getInstance();
-    StorageReference storageRef = storage.getReference();*/
     User user;
 
     IListener mListener;
     public interface IListener {
         public void chooseProfileImage();
         public void signOut();
-        public void updateUserProfile();
+        public void updateUserProfile(HashMap<String, Object> data, User user);
+        void showOrderHistory();
     }
 
     @Override
@@ -88,29 +86,16 @@ public class UserProfileFragment extends Fragment {
                              Bundle savedInstanceState) {
         binding = FragmentUserProfileBinding.inflate(inflater, container, false);
 
-//        if (mAuth.getCurrentUser().getEmail().equals(user.getEmail())) {
-            getActivity().setTitle("My Profile");
-            binding.imageUserProfile.setFocusable(true);
-            binding.inputUserProfileFirstName.setFocusable(true);
-            binding.inputUserProfileLastName.setFocusable(true);
-            binding.radioBtnUserProfileMale.setEnabled(true);
-            binding.radioBtnUserProfileFemale.setEnabled(true);
-            binding.imageButtonSave.setVisibility(View.VISIBLE);
-            binding.imageButtonLogout.setVisibility(View.VISIBLE);
-            binding.inputUserProfileAge.setFocusable(true);
-            binding.inputUserProfileWeight.setFocusable(true);
-            binding.inputUserProfileAddress.setFocusable(true);
-            onProfileImageClick();
-//        } else {
-//            getActivity().setTitle("Profile Detail");
-//            binding.imageUserProfile.setFocusable(false);
-//            binding.inputUserProfileFirstName.setFocusable(false);
-//            binding.inputUserProfileLastName.setFocusable(false);
-//            binding.radioBtnUserProfileMale.setEnabled(false);
-//            binding.radioBtnUserProfileFemale.setEnabled(false);
-//            binding.imageButtonSave.setVisibility(View.INVISIBLE);
-//            binding.imageButtonLogout.setVisibility(View.INVISIBLE);
-//        }
+        getActivity().setTitle("My Profile");
+        binding.inputUserProfileFirstName.setFocusable(true);
+        binding.inputUserProfileLastName.setFocusable(true);
+        binding.radioBtnUserProfileMale.setEnabled(true);
+        binding.radioBtnUserProfileFemale.setEnabled(true);
+        binding.imageButtonSave.setVisibility(View.VISIBLE);
+        binding.imageButtonLogout.setVisibility(View.VISIBLE);
+        binding.inputUserProfileAge.setFocusable(true);
+        binding.inputUserProfileWeight.setFocusable(true);
+        binding.inputUserProfileAddress.setFocusable(true);
 
         binding.inputUserProfileFirstName.setText(user.getFirst_name());
         binding.inputUserProfileLastName.setText(user.getLast_name());
@@ -128,13 +113,19 @@ public class UserProfileFragment extends Fragment {
             binding.radioBtnUserProfileMale.setChecked(true);
         }
 
-        downloadAndSetProfileImage();
         return binding.getRoot();
     }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        binding.buttonOrderHistory.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                mListener.showOrderHistory();
+            }
+        });
 
         binding.imageButtonLogout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -216,34 +207,16 @@ public class UserProfileFragment extends Fragment {
                     data.put("weight", weight);
                     data.put("address", address);
 
-                    Call<UpdateUserResult> call = retrofitInterface.updateUser(user.getToken(), data);
-                    call.enqueue(new Callback<UpdateUserResult>() {
-                        @Override
-                        public void onResponse(Call<UpdateUserResult> call, Response<UpdateUserResult> response) {
-                            if (response.code() == 200) {
-                                UpdateUserResult result = response.body();
-                                Toast.makeText(getActivity(), "Profile updated", Toast.LENGTH_LONG).show();
-                                mListener.updateUserProfile();
-                            } else {
-                                Toast.makeText(getActivity(), "Something went wrong. Logout and log back in.", Toast.LENGTH_LONG).show();
-                            }
-                        }
+                    user.setFirst_name(firstName);
+                    user.setLast_name(lastName);
+                    user.setCity(city);
+                    user.setGender(gender);
+                    user.setAge(age);
+                    user.setWeight(weight);
+                    user.setAddress(address);
 
-                        @Override
-                        public void onFailure(Call<UpdateUserResult> call, Throwable t) {
-                            Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
-                        }
-                    });
+                    mListener.updateUserProfile(data, user);
                 }
-                /*else {
-                    FirebaseAuth mAuthLocal = FirebaseAuth.getInstance();
-                    String finalGender = gender;
-                    User newUser = new User(null, user.getEmail(), firstName, lastName, city, finalGender, user.getImage_location());
-
-                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                    db.collection("users").document(mAuthLocal.getUid())
-                            .set(newUser);
-                }*/
             }
         });
     }
@@ -260,41 +233,5 @@ public class UserProfileFragment extends Fragment {
                         }
                     }).show();
         }
-    }
-
-    private void onProfileImageClick() {
-
-        ImageView profileImage = binding.imageUserProfile;
-
-        profileImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.chooseProfileImage();
-            }
-        });
-    }
-
-    private void downloadAndSetProfileImage() {
-        if (user.getImage_location() != null) {
-            /*StorageReference imagesRef = storageRef.child(user.getImage_location());
-            final long ONE_MEGABYTE = 1024 * 1024;
-            imagesRef.getBytes(ONE_MEGABYTE).addOnSuccessListener(new OnSuccessListener<byte[]>() {
-                @Override
-                public void onSuccess(byte[] bytes) {
-                    Bitmap bmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
-                    binding.imageUserProfile.setImageBitmap(bmp);
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception exception) {
-                    Log.d("myapp", "No Such file or Path found!!");
-                }
-            });*/
-        }
-    }
-
-    public void updateProfileImage(String imageLocalPath) {
-        user.setImage_location(imageLocalPath);
     }
 }
