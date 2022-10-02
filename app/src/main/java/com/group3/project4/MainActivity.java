@@ -39,6 +39,7 @@ import com.group3.project4.util.UserResult;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -52,6 +53,8 @@ public class MainActivity extends AppCompatActivity implements
     RetrofitInterface retrofitInterface;
     Retrofit retrofit;
     User user;
+    private static String SHARED_PREF_JWT_TOKEN = "JWT_TOKEN";
+    private static String SHARED_PREF_EMAIL = "EMAIL";
 
     // Braintree
     private BraintreeClient braintreeClient;
@@ -69,6 +72,9 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
 
         retrofitInterface = retrofit.create(RetrofitInterface.class);
+
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        createUserViaToken();
 
         if (user == null) {
             binding.bottomNavigationView.setVisibility(View.INVISIBLE);
@@ -134,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements
         data.put("email", email);
         data.put("password", password);
 
+        MainActivity mainActivity = this;
         Call<UserResult> call = retrofitInterface.login(data);
         call.enqueue(new Callback<UserResult>() {
             @Override
@@ -144,6 +151,15 @@ public class MainActivity extends AppCompatActivity implements
                             result.getLastName(), result.getCity(),
                             result.getGender(), result.getToken(), result.getAge(), result.getWeight(),
                             result.getAddress(), result.getOrder(), result.getOrderHistory());
+
+                    SharedPreferences sharedPref = mainActivity.getPreferences(Context.MODE_PRIVATE);
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putString(SHARED_PREF_JWT_TOKEN, result.getToken());
+                    editor.putString(SHARED_PREF_EMAIL, result.getEmail());
+                    editor.apply();
+
+                    String token = sharedPref.getString(SHARED_PREF_JWT_TOKEN, null);
+                    String email = sharedPref.getString(SHARED_PREF_EMAIL, null);
 
                     binding.bottomNavigationView.setVisibility(View.VISIBLE);
                     getSupportFragmentManager().beginTransaction()
@@ -394,4 +410,44 @@ public class MainActivity extends AppCompatActivity implements
 //            // handle error
 //        }
 //    }
+
+    private void createUserViaToken() {
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        String savedToken = sharedPref.getString(SHARED_PREF_JWT_TOKEN, null);
+        String savedEmail = sharedPref.getString(SHARED_PREF_EMAIL, null);
+
+        if (savedToken == null || savedEmail == null) return;
+
+        HashMap<String, String> data = new HashMap<>();
+        data.put("email", savedEmail);
+
+        Call<UserResult> call = retrofitInterface.getUserByToken(savedToken, data);
+        call.enqueue(new Callback<UserResult>() {
+            @Override
+            public void onResponse(Call<UserResult> call, Response<UserResult> response) {
+                if (response.code() == 200) {
+                    UserResult result = response.body();
+                    user = new User(result.getId(), result.getEmail(), result.getFirstName(),
+                            result.getLastName(), result.getCity(),
+                            result.getGender(), result.getToken(), result.getAge(), result.getWeight(),
+                            result.getAddress(), result.getOrder(), result.getOrderHistory());
+
+                    sharedPref.edit().putString(SHARED_PREF_JWT_TOKEN, result.getToken());
+                    sharedPref.edit().putString(SHARED_PREF_EMAIL, result.getEmail());
+
+                    binding.bottomNavigationView.setVisibility(View.VISIBLE);
+                    getSupportFragmentManager().beginTransaction()
+                            .replace(R.id.layoutView, new ShopFragment())
+                            .commit();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Token expired!!! Login again.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResult> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 }
