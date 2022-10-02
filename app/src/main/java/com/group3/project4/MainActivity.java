@@ -186,6 +186,12 @@ public class MainActivity extends AppCompatActivity implements
     public void signOut() {
         finishAffinity();
 
+        SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        editor.putString(SHARED_PREF_JWT_TOKEN, "");
+        editor.putString(SHARED_PREF_EMAIL, "");
+        editor.apply();
+
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.layoutView, new LoginFragment(), "LoginFragment")
                 .addToBackStack(null)
