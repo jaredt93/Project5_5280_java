@@ -150,8 +150,9 @@ public class MainActivity extends AppCompatActivity implements
                     user = new User(result.getId(), result.getEmail(), result.getFirstName(),
                             result.getLastName(), result.getCity(),
                             result.getGender(), result.getToken(), result.getAge(), result.getWeight(),
-                            result.getAddress(), result.getOrder(), result.getOrderHistory());
+                            result.getAddress(), result.getOrder(), result.getOrderHistory(), result.getCustomerId());
 
+                    Log.d("JWT", "onResponse: " + user.getCustomerId());
                     SharedPreferences sharedPref = mainActivity.getPreferences(Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putString(SHARED_PREF_JWT_TOKEN, result.getToken());
@@ -284,7 +285,7 @@ public class MainActivity extends AppCompatActivity implements
         data.put("age", user.getAge());
         data.put("weight", user.getWeight());
         data.put("address", user.getAddress());
-        data.put("customerId", user);
+        data.put("customerId", user.getCustomerId());
         data.put("order", user.getOrder());
         data.put("orderHistory", user.getOrderHistory());
 
@@ -362,7 +363,7 @@ public class MainActivity extends AppCompatActivity implements
         data = putUserData();
 
         if(user.getOrderHistory() != null) {
-            user.getOrderHistory().add(user.getOrder());
+            user.getOrderHistory().add(0, user.getOrder());
         } else {
             ArrayList<Order> orderHistory = new ArrayList<>();
             orderHistory.add(user.getOrder());
@@ -379,7 +380,7 @@ public class MainActivity extends AppCompatActivity implements
             public void onResponse(Call<UserResult> call, Response<UserResult> response) {
                 if (response.code() == 200) {
                     UserResult result = response.body();
-                    Toast.makeText(getApplicationContext(), "Cart emptied.", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplicationContext(), "Checkout complete.", Toast.LENGTH_LONG).show();
                 } else {
                     Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
                 }
@@ -436,7 +437,7 @@ public class MainActivity extends AppCompatActivity implements
                     user = new User(result.getId(), result.getEmail(), result.getFirstName(),
                             result.getLastName(), result.getCity(),
                             result.getGender(), result.getToken(), result.getAge(), result.getWeight(),
-                            result.getAddress(), result.getOrder(), result.getOrderHistory());
+                            result.getAddress(), result.getOrder(), result.getOrderHistory(), result.getCustomerId());
 
                     sharedPref.edit().putString(SHARED_PREF_JWT_TOKEN, result.getToken());
                     sharedPref.edit().putString(SHARED_PREF_EMAIL, result.getEmail());

@@ -19,6 +19,7 @@ import com.example.project4.databinding.FragmentSignupBinding;
 import com.group3.project4.util.Globals;
 import com.group3.project4.util.RetrofitInterface;
 import com.group3.project4.profile.User;
+import com.group3.project4.util.UserResult;
 
 import java.util.HashMap;
 
@@ -152,12 +153,12 @@ public class SignupFragment extends Fragment {
                     data.put("city", city);
                     data.put("gender", gender);
 
-                    Call<SignupResult> call = retrofitInterface.signup(data);
-                    call.enqueue(new Callback<SignupResult>() {
+                    Call<UserResult> call = retrofitInterface.signup(data);
+                    call.enqueue(new Callback<UserResult>() {
                         @Override
-                        public void onResponse(Call<SignupResult> call, Response<SignupResult> response) {
+                        public void onResponse(Call<UserResult> call, Response<UserResult> response) {
                             if (response.code() == 200) {
-                                SignupResult result = response.body();
+                                UserResult result = response.body();
                                 Toast.makeText(getActivity(), "You're signed up", Toast.LENGTH_LONG).show();
                                 mListener.loginSuccess(result.getEmail(), password);
                             } else {
@@ -166,7 +167,7 @@ public class SignupFragment extends Fragment {
                         }
 
                         @Override
-                        public void onFailure(Call<SignupResult> call, Throwable t) {
+                        public void onFailure(Call<UserResult> call, Throwable t) {
                             Toast.makeText(getActivity(), t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });

@@ -207,6 +207,9 @@ public class UserProfileFragment extends Fragment {
                     data.put("age", age);
                     data.put("weight", weight);
                     data.put("address", address);
+                    data.put("order", user.getOrder());
+                    data.put("orderHistory", user.getOrderHistory());
+                    data.put("customerId", user.getCustomerId());
 
                     user.setFirst_name(firstName);
                     user.setLast_name(lastName);

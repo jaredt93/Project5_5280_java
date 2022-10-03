@@ -16,7 +16,7 @@ import com.group3.project4.shop.Item;
 import java.util.ArrayList;
 
 public class OrderHistoryRecyclerViewAdapter extends RecyclerView.Adapter<OrderHistoryRecyclerViewAdapter.ViewHolder> {
-    ArrayList<Order> orders;
+    ArrayList<Order> orders = new ArrayList<>();
     OrderHistoryRecyclerViewAdapter.IOrderRecycler mListener;
     private Context context;
 

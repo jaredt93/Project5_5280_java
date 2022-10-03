@@ -18,6 +18,7 @@ public class UserResult {
     String address;
     Order order;
     ArrayList<Order> orderHistory;
+    String customerId;
 
     public String getId() {
         return id;
@@ -121,6 +122,14 @@ public class UserResult {
 
     public void setOrderHistory(ArrayList<Order> orderHistory) {
         this.orderHistory = orderHistory;
+    }
+
+    public String getCustomerId() {
+        return customerId;
+    }
+
+    public void setCustomerId(String customerId) {
+        this.customerId = customerId;
     }
 }
 
