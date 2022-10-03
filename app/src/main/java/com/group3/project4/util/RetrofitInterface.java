@@ -23,7 +23,7 @@ public interface RetrofitInterface {
     Call<UserResult> login(@Body HashMap<String, String> data);
 
     @POST("/api/signup")
-    Call<SignupResult> signup(@Body HashMap<String, String> data);
+    Call<UserResult> signup(@Body HashMap<String, String> data);
 
     @POST("/api/user/update")
     Call<UserResult> updateUser(@Header ("x-jwt-token") String token, @Body HashMap<String, Object> data);

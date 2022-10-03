@@ -24,7 +24,7 @@ public class User implements Serializable {
     }
 
     public User(String id, String email, String first_name, String last_name, String city, String gender,
-            String token, int age, int weight, String address, Order order, ArrayList<Order> orderHistory) {
+            String token, int age, int weight, String address, Order order, ArrayList<Order> orderHistory, String customerId) {
         this.id = id;
         this.email = email;
         this.first_name = first_name;
@@ -37,6 +37,7 @@ public class User implements Serializable {
         this.address = address;
         this.order = order;
         this.orderHistory = orderHistory;
+        this.customerId = customerId;
     }
 
     public String getId() {

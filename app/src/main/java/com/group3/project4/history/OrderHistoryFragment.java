@@ -70,6 +70,9 @@ public class OrderHistoryFragment extends Fragment implements OrderHistoryRecycl
 
         if (getArguments() != null) {
             this.user = (User) getArguments().getSerializable(USER);
+            if(this.user.getOrderHistory() == null) {
+                this.user.setOrderHistory(new ArrayList<Order>());
+            }
         }
     }
 
