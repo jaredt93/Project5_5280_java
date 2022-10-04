@@ -5,6 +5,8 @@ import androidx.annotation.NonNull;
 import com.braintreepayments.api.ClientTokenCallback;
 import com.braintreepayments.api.ClientTokenProvider;
 
+import java.util.HashMap;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -13,12 +15,21 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BraintreeClientTokenProvider implements ClientTokenProvider {
+    String customerId;
 
     private static final Retrofit.Builder builder = new Retrofit.Builder()
             .baseUrl(Globals.URL)
             .addConverterFactory(GsonConverterFactory.create());
 
     private static final OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
+
+    public BraintreeClientTokenProvider() {
+        // empty
+    }
+
+    public BraintreeClientTokenProvider(String customerId) {
+        this.customerId = customerId;
+    }
 
     public static RetrofitInterface createService() {
         builder.client(httpClient.build());
@@ -27,7 +38,7 @@ public class BraintreeClientTokenProvider implements ClientTokenProvider {
     }
 
     public void getClientToken(@NonNull ClientTokenCallback callback) {
-        Call<ClientToken> call = createService().getClientToken();
+        Call<ClientToken> call = createService().getClientToken(customerId);
         call.enqueue(new Callback<ClientToken>() {
             @Override
             public void onResponse(Call<ClientToken> call, Response<ClientToken> response) {
