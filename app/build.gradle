@@ -58,7 +58,6 @@ dependencies {
     implementation 'com.braintreepayments.api:card:4.15.0'
     // to collect device data
     implementation 'com.braintreepayments.api:data-collector:4.15.0'
-
-    //implementation 'com.braintreepayments.api:drop-in:6.2.0'
+    implementation 'com.braintreepayments.api:drop-in:6.2.0'
 }
 

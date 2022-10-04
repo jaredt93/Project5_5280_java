@@ -4,10 +4,13 @@ import com.google.gson.annotations.SerializedName;
 
 public class ClientToken {
 
-    @SerializedName("value")
-    private String value;
+    private String token;
 
-    public String getValue() {
-        return value;
+    public String getToken() {
+        return token;
+    }
+
+    public void setToken(String token) {
+        this.token = token;
     }
 }

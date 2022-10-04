@@ -14,10 +14,11 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.braintreepayments.api.BraintreeClient;
-//import com.braintreepayments.api.DropInClient;
-//import com.braintreepayments.api.DropInListener;
-//import com.braintreepayments.api.DropInRequest;
-//import com.braintreepayments.api.DropInResult;
+import com.braintreepayments.api.ClientTokenCallback;
+import com.braintreepayments.api.DropInClient;
+import com.braintreepayments.api.DropInListener;
+import com.braintreepayments.api.DropInRequest;
+import com.braintreepayments.api.DropInResult;
 import com.braintreepayments.api.UserCanceledException;
 import com.example.project4.R;
 import com.example.project4.databinding.ActivityMainBinding;
@@ -33,6 +34,7 @@ import com.group3.project4.shop.Item;
 import com.group3.project4.shop.ShopFragment;
 import com.group3.project4.signup.SignupFragment;
 import com.group3.project4.util.BraintreeClientTokenProvider;
+import com.group3.project4.util.ClientToken;
 import com.group3.project4.util.Globals;
 import com.group3.project4.util.RetrofitInterface;
 import com.group3.project4.util.UserResult;
@@ -48,7 +50,8 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements
-    LoginFragment.IListener, SignupFragment.IListener, UserProfileFragment.IListener, ShopFragment.IListener, CartFragment.IListener, OrderHistoryFragment.IListener {
+    LoginFragment.IListener, SignupFragment.IListener, UserProfileFragment.IListener, ShopFragment.IListener, CartFragment.IListener, OrderHistoryFragment.IListener, DropInListener {
+    private static final int DROP_IN_REQUEST_CODE = 001;
     ActivityMainBinding binding;
     RetrofitInterface retrofitInterface;
     Retrofit retrofit;
@@ -58,7 +61,8 @@ public class MainActivity extends AppCompatActivity implements
 
     // Braintree
     private BraintreeClient braintreeClient;
-    //private DropInClient dropInClient;
+    private DropInClient dropInClient;
+    DropInRequest dropInRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,6 +112,7 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         braintreeClient = new BraintreeClient(this, new BraintreeClientTokenProvider());
+        onBraintreeSubmit();
     }
 
     private void replaceFragment(Fragment fragment) {
@@ -393,30 +398,34 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         replaceFragment(CartFragment.newInstance(user.getOrder()));
+        launchDropIn();
     }
 
-//    public void onBraintreeSubmit() {
-//        DropInRequest dropInRequest = new DropInRequest();
-//        dropInClient = new DropInClient(this, dropInRequest, new BraintreeClientTokenProvider());
-//    }
+    public void onBraintreeSubmit() {
+        DropInRequest dropInRequest = new DropInRequest();
+        dropInClient = new DropInClient(this, dropInRequest, new BraintreeClientTokenProvider());
+        dropInClient.setListener((DropInListener) this);
+    }
 
-//    private void launchDropIn() {
-//        dropInClient.launchDropIn();
-//    }
-//
-//    @Override
-//    public void onDropInSuccess(@NonNull DropInResult dropInResult) {
-//        // send dropInResult.getPaymentMethodNonce().getString() to server
-//    }
-//
-//    @Override
-//    public void onDropInFailure(@NonNull Exception error) {
-//        if (error instanceof UserCanceledException) {
-//            // user canceled
-//        } else {
-//            // handle error
-//        }
-//    }
+    private void launchDropIn() {
+        dropInClient.launchDropInForResult(this, DROP_IN_REQUEST_CODE);
+    }
+
+    @Override
+    public void onDropInSuccess(@NonNull DropInResult dropInResult) {
+        Log.d("JWT", "onDropInSuccess: ");
+        // send dropInResult.getPaymentMethodNonce().getString() to server
+    }
+
+    @Override
+    public void onDropInFailure(@NonNull Exception error) {
+        Log.d("JWT", "onDropInFailure: " + error.getMessage());
+        if (error instanceof UserCanceledException) {
+            // user canceled
+        } else {
+            // handle error
+        }
+    }
 
     private void createUserViaToken() {
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);
