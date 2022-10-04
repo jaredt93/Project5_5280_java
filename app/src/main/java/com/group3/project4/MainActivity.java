@@ -373,8 +373,49 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void checkout() {
         launchDropIn();
+    }
 
+    public void onBraintreeSubmit() {
+        DropInRequest dropInRequest = new DropInRequest();
+        dropInClient = new DropInClient(this, dropInRequest, new BraintreeClientTokenProvider());
+        dropInClient.setListener((DropInListener) this);
+    }
 
+    private void launchDropIn() {
+        dropInClient.launchDropInForResult(this, DROP_IN_REQUEST_CODE);
+    }
+
+    @Override
+    public void onDropInSuccess(@NonNull DropInResult dropInResult) {
+        Log.d("JWT", "onDropInSuccess: " + dropInResult.getPaymentMethodNonce().getString());
+
+        HashMap<String, Object> data = new HashMap<>();
+
+        Log.d("JWT", "onDropInSuccess: " + user.getOrder().getOrderTotal().toString());
+        data.put("amount", user.getOrder().getOrderTotal().toString());
+        data.put("paymentMethodNonce", dropInResult.getPaymentMethodNonce().getString());
+
+        Call<UserResult> call = retrofitInterface.checkout(user.getToken(), data);
+        call.enqueue(new Callback<UserResult>() {
+            @Override
+            public void onResponse(Call<UserResult> call, Response<UserResult> response) {
+                if (response.code() == 200) {
+                    UserResult result = response.body();
+                    Toast.makeText(getApplicationContext(), "Transaction complete.", Toast.LENGTH_LONG).show();
+                    clearAddToHistory();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResult> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    private void clearAddToHistory() {
         HashMap<String, Object> data = new HashMap<>();
         data = putUserData();
 
@@ -409,49 +450,6 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         replaceFragment(CartFragment.newInstance(user.getOrder()));
-    }
-
-    public void onBraintreeSubmit() {
-        DropInRequest dropInRequest = new DropInRequest();
-        dropInClient = new DropInClient(this, dropInRequest, new BraintreeClientTokenProvider());
-        dropInClient.setListener((DropInListener) this);
-    }
-
-    private void launchDropIn() {
-        dropInClient.launchDropInForResult(this, DROP_IN_REQUEST_CODE);
-    }
-
-    @Override
-    public void onDropInSuccess(@NonNull DropInResult dropInResult) {
-        Log.d("JWT", "onDropInSuccess: ");
-
-        HashMap<String, Object> data = new HashMap<>();
-        data.put("amount", user.getOrder().getOrderTotal());
-        data.put("paymentMethodNonce", dropInResult.getPaymentMethodNonce().getString());
-
-        HashMap<String, Object> submitForSettlement = new HashMap<>();
-        submitForSettlement.put("submitForSettlement", true);
-        data.put("options", submitForSettlement);
-
-        Call<UserResult> call = retrofitInterface.checkout(user.getToken(), data);
-        call.enqueue(new Callback<UserResult>() {
-            @Override
-            public void onResponse(Call<UserResult> call, Response<UserResult> response) {
-                if (response.code() == 200) {
-                    UserResult result = response.body();
-                    Toast.makeText(getApplicationContext(), "Checkout complete.", Toast.LENGTH_LONG).show();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserResult> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-
-
     }
 
     @Override

@@ -37,6 +37,6 @@ public interface RetrofitInterface {
     @POST("/api/user/find")
     Call<UserResult> getUserByToken(@Header ("x-jwt-token") String token, @Body HashMap<String, String> data);
 
-    @POST("/api/checkout")
+    @POST("/checkout")
     Call<UserResult> checkout(@Header ("x-jwt-token") String token, @Body HashMap<String, Object> data);
 }
