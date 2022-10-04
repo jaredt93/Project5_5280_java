@@ -31,7 +31,7 @@ public class BraintreeClientTokenProvider implements ClientTokenProvider {
         call.enqueue(new Callback<ClientToken>() {
             @Override
             public void onResponse(Call<ClientToken> call, Response<ClientToken> response) {
-                callback.onSuccess(response.body().getValue());
+                callback.onSuccess(response.body().getToken());
             }
 
             @Override
