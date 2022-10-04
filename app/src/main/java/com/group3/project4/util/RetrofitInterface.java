@@ -32,8 +32,11 @@ public interface RetrofitInterface {
     Call<ItemResponse> getItems();
 
     @GET("/client_token")
-    Call<ClientToken> getClientToken();
+    Call<ClientToken> getClientToken(@Header ("x-jwt-token") String token);
 
     @POST("/api/user/find")
     Call<UserResult> getUserByToken(@Header ("x-jwt-token") String token, @Body HashMap<String, String> data);
+
+    @POST("/api/checkout")
+    Call<UserResult> checkout(@Header ("x-jwt-token") String token, @Body HashMap<String, Object> data);
 }

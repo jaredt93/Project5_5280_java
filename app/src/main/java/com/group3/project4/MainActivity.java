@@ -1,6 +1,7 @@
 package com.group3.project4;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -9,6 +10,7 @@ import androidx.fragment.app.FragmentTransaction;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -60,6 +62,7 @@ public class MainActivity extends AppCompatActivity implements
     private static String SHARED_PREF_EMAIL = "EMAIL";
 
     // Braintree
+    HashMap<String, Object> customerId = new HashMap<>();
     private BraintreeClient braintreeClient;
     private DropInClient dropInClient;
     DropInRequest dropInRequest;
@@ -111,7 +114,12 @@ public class MainActivity extends AppCompatActivity implements
             return true;
         });
 
-        braintreeClient = new BraintreeClient(this, new BraintreeClientTokenProvider());
+        String custId = null;
+        if (user != null) {
+            custId = user.getCustomerId();
+        }
+
+        braintreeClient = new BraintreeClient(this, new BraintreeClientTokenProvider(custId));
         onBraintreeSubmit();
     }
 
@@ -364,6 +372,9 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void checkout() {
+        launchDropIn();
+
+
         HashMap<String, Object> data = new HashMap<>();
         data = putUserData();
 
@@ -398,7 +409,6 @@ public class MainActivity extends AppCompatActivity implements
         });
 
         replaceFragment(CartFragment.newInstance(user.getOrder()));
-        launchDropIn();
     }
 
     public void onBraintreeSubmit() {
@@ -414,7 +424,34 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onDropInSuccess(@NonNull DropInResult dropInResult) {
         Log.d("JWT", "onDropInSuccess: ");
-        // send dropInResult.getPaymentMethodNonce().getString() to server
+
+        HashMap<String, Object> data = new HashMap<>();
+        data.put("amount", user.getOrder().getOrderTotal());
+        data.put("paymentMethodNonce", dropInResult.getPaymentMethodNonce().getString());
+
+        HashMap<String, Object> submitForSettlement = new HashMap<>();
+        submitForSettlement.put("submitForSettlement", true);
+        data.put("options", submitForSettlement);
+
+        Call<UserResult> call = retrofitInterface.checkout(user.getToken(), data);
+        call.enqueue(new Callback<UserResult>() {
+            @Override
+            public void onResponse(Call<UserResult> call, Response<UserResult> response) {
+                if (response.code() == 200) {
+                    UserResult result = response.body();
+                    Toast.makeText(getApplicationContext(), "Checkout complete.", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onFailure(Call<UserResult> call, Throwable t) {
+                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+
+
     }
 
     @Override
