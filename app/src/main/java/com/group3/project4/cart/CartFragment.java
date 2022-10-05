@@ -160,6 +160,7 @@ public class CartFragment extends Fragment implements CartRecyclerViewAdapter.IC
 
         Log.d("JWT", "onDropInSuccess: " + user.getOrder().getOrderTotal().toString());
         data.put("amount", user.getOrder().getOrderTotal().toString());
+        data.put("order", user.getOrder().getCartItems());
         data.put("paymentMethodNonce", dropInResult.getPaymentMethodNonce().getString());
         data.put("customerId", user.getCustomerId());
 
