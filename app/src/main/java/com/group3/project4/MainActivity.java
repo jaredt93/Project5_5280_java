@@ -394,6 +394,7 @@ public class MainActivity extends AppCompatActivity implements
         Log.d("JWT", "onDropInSuccess: " + user.getOrder().getOrderTotal().toString());
         data.put("amount", user.getOrder().getOrderTotal().toString());
         data.put("paymentMethodNonce", dropInResult.getPaymentMethodNonce().getString());
+        data.put("customerId", user.getCustomerId());
 
         Call<UserResult> call = retrofitInterface.checkout(user.getToken(), data);
         call.enqueue(new Callback<UserResult>() {
