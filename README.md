@@ -6,7 +6,7 @@
 - Jared Tamulynas
 
 ## Link to Youtube Channel
-[Project Demo](https://youtu.be/HvSJ8CzSp4g)
+[Project Demo](https://youtu.be/3Ig7cxNcfZQ)
 
 ## Project Purpose
 In this in class assignment you should work on creating a simple authentication API for mobile application, the requirements are as follows :
