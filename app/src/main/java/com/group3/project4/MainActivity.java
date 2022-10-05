@@ -52,8 +52,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MainActivity extends AppCompatActivity implements
-    LoginFragment.IListener, SignupFragment.IListener, UserProfileFragment.IListener, ShopFragment.IListener, CartFragment.IListener, OrderHistoryFragment.IListener, DropInListener {
-    private static final int DROP_IN_REQUEST_CODE = 001;
+    LoginFragment.IListener, SignupFragment.IListener, UserProfileFragment.IListener, ShopFragment.IListener, CartFragment.IListener, OrderHistoryFragment.IListener {
     ActivityMainBinding binding;
     RetrofitInterface retrofitInterface;
     Retrofit retrofit;
@@ -61,11 +60,6 @@ public class MainActivity extends AppCompatActivity implements
     private static String SHARED_PREF_JWT_TOKEN = "JWT_TOKEN";
     private static String SHARED_PREF_EMAIL = "EMAIL";
 
-    // Braintree
-    HashMap<String, Object> customerId = new HashMap<>();
-    private BraintreeClient braintreeClient;
-    private DropInClient dropInClient;
-    DropInRequest dropInRequest;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,7 +98,7 @@ public class MainActivity extends AppCompatActivity implements
                     replaceFragment(new ShopFragment());
                     break;
                 case R.id.cartFragment:
-                    replaceFragment(CartFragment.newInstance(user.getOrder()));
+                    replaceFragment(CartFragment.newInstance(user.getOrder(), user));
                     break;
                 case R.id.userProfileFragment:
                     replaceFragment(UserProfileFragment.newInstance(user));
@@ -118,9 +112,9 @@ public class MainActivity extends AppCompatActivity implements
         if (user != null) {
             custId = user.getCustomerId();
         }
-
-        braintreeClient = new BraintreeClient(this, new BraintreeClientTokenProvider(custId));
-        onBraintreeSubmit();
+//
+//        braintreeClient = new BraintreeClient(this, new BraintreeClientTokenProvider(custId));
+//        onBraintreeSubmit();
     }
 
     private void replaceFragment(Fragment fragment) {
@@ -338,7 +332,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        replaceFragment(CartFragment.newInstance(user.getOrder()));
+        replaceFragment(CartFragment.newInstance(user.getOrder(), user));
     }
 
     @Override
@@ -367,56 +361,11 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        replaceFragment(CartFragment.newInstance(user.getOrder()));
+        replaceFragment(CartFragment.newInstance(user.getOrder(), user));
     }
 
     @Override
-    public void checkout() {
-        launchDropIn();
-    }
-
-    public void onBraintreeSubmit() {
-        DropInRequest dropInRequest = new DropInRequest();
-        dropInClient = new DropInClient(this, dropInRequest, new BraintreeClientTokenProvider());
-        dropInClient.setListener((DropInListener) this);
-    }
-
-    private void launchDropIn() {
-        dropInClient.launchDropInForResult(this, DROP_IN_REQUEST_CODE);
-    }
-
-    @Override
-    public void onDropInSuccess(@NonNull DropInResult dropInResult) {
-        Log.d("JWT", "onDropInSuccess: " + dropInResult.getPaymentMethodNonce().getString());
-
-        HashMap<String, Object> data = new HashMap<>();
-
-        Log.d("JWT", "onDropInSuccess: " + user.getOrder().getOrderTotal().toString());
-        data.put("amount", user.getOrder().getOrderTotal().toString());
-        data.put("paymentMethodNonce", dropInResult.getPaymentMethodNonce().getString());
-        data.put("customerId", user.getCustomerId());
-
-        Call<UserResult> call = retrofitInterface.checkout(user.getToken(), data);
-        call.enqueue(new Callback<UserResult>() {
-            @Override
-            public void onResponse(Call<UserResult> call, Response<UserResult> response) {
-                if (response.code() == 200) {
-                    UserResult result = response.body();
-                    Toast.makeText(getApplicationContext(), "Transaction complete.", Toast.LENGTH_LONG).show();
-                    clearAddToHistory();
-                } else {
-                    Toast.makeText(getApplicationContext(), "Something went wrong.", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void onFailure(Call<UserResult> call, Throwable t) {
-                Toast.makeText(getApplicationContext(), t.getMessage(), Toast.LENGTH_LONG).show();
-            }
-        });
-    }
-
-    private void clearAddToHistory() {
+    public void clearAddToHistory() {
         HashMap<String, Object> data = new HashMap<>();
         data = putUserData();
 
@@ -450,18 +399,9 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        replaceFragment(CartFragment.newInstance(user.getOrder()));
+        replaceFragment(CartFragment.newInstance(user.getOrder(), user));
     }
 
-    @Override
-    public void onDropInFailure(@NonNull Exception error) {
-        Log.d("JWT", "onDropInFailure: " + error.getMessage());
-        if (error instanceof UserCanceledException) {
-            // user canceled
-        } else {
-            // handle error
-        }
-    }
 
     private void createUserViaToken() {
         SharedPreferences sharedPref = this.getPreferences(Context.MODE_PRIVATE);

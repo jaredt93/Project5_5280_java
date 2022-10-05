@@ -16,6 +16,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class BraintreeClientTokenProvider implements ClientTokenProvider {
     String customerId;
+    String JWT;
 
     private static final Retrofit.Builder builder = new Retrofit.Builder()
             .baseUrl(Globals.URL)
@@ -27,8 +28,9 @@ public class BraintreeClientTokenProvider implements ClientTokenProvider {
         // empty
     }
 
-    public BraintreeClientTokenProvider(String customerId) {
+    public BraintreeClientTokenProvider(String JWT, String customerId) {
         this.customerId = customerId;
+        this.JWT = JWT;
     }
 
     public static RetrofitInterface createService() {
@@ -38,7 +40,9 @@ public class BraintreeClientTokenProvider implements ClientTokenProvider {
     }
 
     public void getClientToken(@NonNull ClientTokenCallback callback) {
-        Call<ClientToken> call = createService().getClientToken(customerId);
+        HashMap<String, String> body = new HashMap();
+        body.put("customerId", customerId);
+        Call<ClientToken> call = createService().getClientToken(JWT);
         call.enqueue(new Callback<ClientToken>() {
             @Override
             public void onResponse(Call<ClientToken> call, Response<ClientToken> response) {
